@@ -5,9 +5,15 @@ export default function App() {
 
   const [fKeyDown, setFKeyDown] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
-  const titleControls = useAnimation();
-  const videoControls = useAnimation();
   const videoRef = useRef();
+
+  const titleControls = useAnimation();
+  const titleControlsFullscreen = useAnimation();
+
+  const videoControls = useAnimation();
+  const videoControlsFullscreen = useAnimation();
+
+  const bgControls = useAnimation();
 
   useEffect(() => {
     videoRef.current.currentTime = 15;
@@ -29,10 +35,18 @@ export default function App() {
     });
 
     videoControls.start({
-      scale: fullscreen ? 1.9 : 0.9,
+      scale: 0.9,
       transition: {
         duration: 0.4,
         ease: 'circInOut'
+      }
+    });
+
+    videoControlsFullscreen.start({
+      scale: 4.5,
+      transition: {
+        duration: 0.4,
+        ease: 'backInOut'
       }
     });
 
@@ -54,24 +68,25 @@ export default function App() {
       }
     });
 
-    if (fullscreen) {
-      videoControls.start({
-        scale: 1,
-        transition: {
-          duration: 0.4,
-          ease: 'backOut'
-        }
-      });
-    }
-    else {
-      videoControls.start({
-        scale: 4,
-        transition: {
-          duration: 0.4,
-          ease: 'backOut'
-        }
-      });
-    }
+    // go fullscreen
+    videoControls.start({
+      scale: 4,
+      transition: {
+        duration: 0.4,
+        ease: 'backOut'
+      }
+    });
+
+    // exit fullscreen
+    videoControlsFullscreen.start({
+      scale: 1,
+      transition: {
+        duration: 0.2,
+        ease: 'circOut'
+      }
+    });
+
+
 
     setFKeyDown(current => false);
     setFullscreen(current => !current);
@@ -117,7 +132,6 @@ export default function App() {
         <h1>
           Press <motion.p animate={titleControls} className='marker'>F</motion.p> to go Fullscreen 📽️
         </h1>
-        <p>Refresh the page to exit fullscreen :p</p>
       </div>
       <motion.video
         src="http://upload.wikimedia.org/wikipedia/commons/7/79/Big_Buck_Bunny_small.ogv"
@@ -127,7 +141,7 @@ export default function App() {
         loop
         playsInline
         ref={videoRef}
-        animate={videoControls}
+        animate={fullscreen ? videoControlsFullscreen : videoControls}
         style={{ width: '100%' }}
       ></motion.video>
     </>
